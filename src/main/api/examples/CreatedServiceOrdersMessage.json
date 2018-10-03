@@ -1,0 +1,68 @@
+[
+   {
+      "OrderId":1234,
+      "CustomerId":"0123456789",
+      "ServicesBoundle":[
+         {
+            "ServiceId":"5",
+            "Description":"Service Description"
+         },
+         {
+            "ServiceId":"3",
+            "Description":"Service Description"
+         }
+      ],
+      "Description":"Service Description",
+      "Status":"Completed",
+      "links":[
+         {
+            "rel":"/linkrels/serviceOrder/info",
+            "uri":"/service/order/1234",
+            "method":"GET"
+         },
+         {
+            "rel":"/linkrels/serviceOrder/updateInfo",
+            "uri":"/service/order/1234",
+            "method":"PUT"
+         },
+         {
+            "rel":"/linkrels/serviceOrder/delete",
+            "uri":"/service/order/1234",
+            "method":"DELETE"
+         }
+      ]
+   },
+   {
+      "OrderId":5678,
+      "CustomerId":"0123456789",
+      "ServicesBoundle":[
+         {
+            "ServiceId":"5",
+            "Description":"Service Description"
+         },
+         {
+            "ServiceId":"3",
+            "Description":"Service Description"
+         }
+      ],
+      "Description":"Service Description",
+      "Status":"Completed",
+      "links":[
+         {
+            "rel":"/linkrels/serviceOrder/info",
+            "uri":"/service/order/5678",
+            "method":"GET"
+         },
+         {
+            "rel":"/linkrels/serviceOrder/updateInfo",
+            "uri":"/service/order/5678",
+            "method":"PUT"
+         },
+         {
+            "rel":"/linkrels/serviceOrder/delete",
+            "uri":"/service/order/5678",
+            "method":"DELETE"
+         }
+      ]
+   }
+]

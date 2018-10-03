@@ -1,0 +1,15 @@
+{
+   "CustomerId":"0123456789",
+   "ServicesBoundle":[
+      {
+         "ServiceId":"5",
+         "Description":"Service Description"
+      },
+      {
+         "ServiceId":"3",
+         "Description":"Service Description"
+      }
+   ],
+   "Description":"Service Description",
+   "Status":"Process"
+}

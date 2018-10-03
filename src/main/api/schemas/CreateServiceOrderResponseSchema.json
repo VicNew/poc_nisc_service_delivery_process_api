@@ -1,0 +1,150 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://newtoms.com/root.json",
+  "type": "object",
+  "title": "Create Service Order Response Schema",
+  "required": [
+    "OrderId",
+    "CustomerId",
+    "ServicesBoundleStatus",
+    "Description",
+    "Status",
+    "links"
+  ],
+  "properties": {
+    "OrderId": {
+      "$id": "#/properties/OrderId",
+      "type": "integer",
+      "title": "The Orderid Schema",
+      "default": 0,
+      "examples": [
+        1234
+      ]
+    },
+    "CustomerId": {
+      "$id": "#/properties/CustomerId",
+      "type": "string",
+      "title": "The Customerid Schema",
+      "default": "",
+      "examples": [
+        "0123456789"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "ServicesBoundleStatus": {
+      "$id": "#/properties/ServicesBoundleStatus",
+      "type": "array",
+      "title": "The Servicesboundlestatus Schema",
+      "items": {
+        "$id": "#/properties/ServicesBoundleStatus/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "ServiceId",
+          "Description",
+          "Status"
+        ],
+        "properties": {
+          "ServiceId": {
+            "$id": "#/properties/ServicesBoundleStatus/items/properties/ServiceId",
+            "type": "string",
+            "title": "The Serviceid Schema",
+            "default": "",
+            "examples": [
+              "5"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "Description": {
+            "$id": "#/properties/ServicesBoundleStatus/items/properties/Description",
+            "type": "string",
+            "title": "The Description Schema",
+            "default": "",
+            "examples": [
+              "Service Description"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "Status": {
+            "$id": "#/properties/ServicesBoundleStatus/items/properties/Status",
+            "type": "string",
+            "title": "The Status Schema",
+            "default": "",
+            "examples": [
+              "Success"
+            ],
+            "pattern": "^(.*)$"
+          }
+        }
+      }
+    },
+    "Description": {
+      "$id": "#/properties/Description",
+      "type": "string",
+      "title": "The Description Schema",
+      "default": "",
+      "examples": [
+        "Service Description"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "Status": {
+      "$id": "#/properties/Status",
+      "type": "string",
+      "title": "The Status Schema",
+      "default": "",
+      "examples": [
+        "Completed"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "links": {
+      "$id": "#/properties/links",
+      "type": "array",
+      "title": "The Links Schema",
+      "items": {
+        "$id": "#/properties/links/items",
+        "type": "object",
+        "title": "The Items Schema",
+        "required": [
+          "rel",
+          "uri",
+          "method"
+        ],
+        "properties": {
+          "rel": {
+            "$id": "#/properties/links/items/properties/rel",
+            "type": "string",
+            "title": "The Rel Schema",
+            "default": "",
+            "examples": [
+              "/linkrels/serviceOrder/info"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "uri": {
+            "$id": "#/properties/links/items/properties/uri",
+            "type": "string",
+            "title": "The Uri Schema",
+            "default": "",
+            "examples": [
+              "/service/order/1234"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "method": {
+            "$id": "#/properties/links/items/properties/method",
+            "type": "string",
+            "title": "The Method Schema",
+            "default": "",
+            "examples": [
+              "GET"
+            ],
+            "pattern": "^(.*)$"
+          }
+        }
+      }
+    }
+  }
+}

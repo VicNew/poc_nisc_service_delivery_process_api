@@ -1,0 +1,263 @@
+#%RAML 1.0
+baseUri: https://mocksvc.mulesoft.com/mocks/ad1a2f6f-807b-483a-9ba3-441e3e1fdc46 # 
+title: POC NiSC Service Delivery Process API
+version: 1.0.0
+protocols: [HTTP, HTTPS]
+mediaType: application/json
+
+schemas: 
+  createServiceOrderRequestSchema: !include schemas/CreateServiceOrderRequestSchema.json
+  createServiceOrderResponseSchema: !include schemas/CreateServiceOrderResponseSchema.json
+  createdServiceOrderMessageSchema: !include schemas/CreatedServiceOrderMessageSchema.json
+  createdServiceOrdersMessageSchema: !include schemas/CreatedServiceOrdersMessageSchema.json
+  errorMessageSchema: !include schemas/ApiErrorMessageSchema.json
+
+traits: 
+  orderable:
+    queryParameters:
+      orderBy:
+        description: |
+          Order by field: <<fieldsList>>
+        type: string
+        required: false
+      order:
+        description: Order
+        enum: [desc, asc]
+        default: desc
+        required: false
+  pageable:
+    queryParameters:
+      offset:
+        description: Skip over a number of elements by specifying an offset value for the query
+        type: integer
+        required: false
+        example: 20
+        default: 0
+      limit:
+        description: Limit the number of elements on the response
+        type: integer
+        required: false
+        example: 50
+        default: 10
+
+/service:
+  /order:
+    get:
+      displayName: Get Service Orders
+      description: Get Service Orders by specific search.
+      is: [orderable: {fieldsList: OrderId}, pageable]
+      queryParameters: 
+        CustomerId: 
+          displayName: Customer Id
+          description: Query all Service Orders base on customer identification number
+          type: string
+          example: "0123456789"
+          required: false
+        Status: 
+          displayName: Service Orders Status
+          description: Query all Service Orders base on status
+          type: string
+          example: "Completed"
+          required: false
+      responses: 
+        200:
+          description: Return a list of service orders
+          body: 
+            application/json:
+              schema: createdServiceOrdersMessageSchema
+              example: !include examples/CreatedServiceOrdersMessage.json
+        400:
+          description: The request could not be understood by the server due to malformed syntax. The request could not be understood by the server due to malformed syntax.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        401:
+          description: If the request already included Authorization credentials, then the 401 response indicates that authorization has been refused for those credentials.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        404:
+          description: The server has not found anything matching the Request-URI.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        406:
+          description: The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        500:
+          description: The server encountered an unexpected condition which prevented it from fulfilling the request.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+    post:
+      displayName: Create a Service Order
+      description: Process a Service Order to activate a network service to a Customer.
+      body: 
+        application/json:
+          schema: createServiceOrderRequestSchema
+          example: !include examples/CreateServiceOrderRequest.json
+      responses:
+        201:
+          description: The Serivice Order was created
+          body: 
+            application/json:
+              schema:  createServiceOrderResponseSchema
+              example: !include examples/CreateServiceOrderResponse.json
+        400:
+          description: The request could not be understood by the server due to malformed syntax. The request could not be understood by the server due to malformed syntax.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        401:
+          description: If the request already included Authorization credentials, then the 401 response indicates that authorization has been refused for those credentials.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        404:
+          description: The server has not found anything matching the Request-URI.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        406:
+          description: The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+        500:
+          description: The server encountered an unexpected condition which prevented it from fulfilling the request.
+          body: 
+            application/json:
+              schema: errorMessageSchema
+              example: !include examples/ApiErrorMessage.json
+    /{id}:
+      get:
+        displayName: Get a Service Order
+        description: Get full Service Order data by Id.
+        responses: 
+          200:
+            description: The requested Service Order
+            body: 
+              application/json:
+                schema:  createServiceOrderResponseSchema
+                example: !include examples/CreateServiceOrderResponse.json
+          400:
+            description: The request could not be understood by the server due to malformed syntax. The request could not be understood by the server due to malformed syntax.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          401:
+            description: If the request already included Authorization credentials, then the 401 response indicates that authorization has been refused for those credentials.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          404:
+            description: The server has not found anything matching the Request-URI.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          406:
+            description: The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          500:
+            description: The server encountered an unexpected condition which prevented it from fulfilling the request.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+      put:
+        displayName: Update a Service Order
+        description: Update information about the service order.
+        body: 
+          application/json:
+            schema: createdServiceOrderMessageSchema
+            example: !include examples/CreatedServiceOrderMessage.json
+        responses:
+          200:
+            description: The Serivice Order was updated
+            body: 
+              application/json:
+                schema:  createServiceOrderResponseSchema
+                example: !include examples/CreateServiceOrderResponse.json
+          400:
+            description: The request could not be understood by the server due to malformed syntax. The request could not be understood by the server due to malformed syntax.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          401:
+            description: If the request already included Authorization credentials, then the 401 response indicates that authorization has been refused for those credentials.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          404:
+            description: The server has not found anything matching the Request-URI.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          406:
+            description: The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          500:
+            description: The server encountered an unexpected condition which prevented it from fulfilling the request.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+      delete:
+        displayName: Delete a Service Order
+        description: Delete a Service Order that it is no longer relevant.
+        responses: 
+          200:
+            description: The Serivice Order was deleted
+          400:
+            description: The request could not be understood by the server due to malformed syntax. The request could not be understood by the server due to malformed syntax.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          401:
+            description: If the request already included Authorization credentials, then the 401 response indicates that authorization has been refused for those credentials.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          404:
+            description: The server has not found anything matching the Request-URI.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          406:
+            description: The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
+          500:
+            description: The server encountered an unexpected condition which prevented it from fulfilling the request.
+            body: 
+              application/json:
+                schema: errorMessageSchema
+                example: !include examples/ApiErrorMessage.json
