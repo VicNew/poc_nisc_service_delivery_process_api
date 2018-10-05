@@ -43,7 +43,6 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <flow-ref name="createAServiceOrderToProcess" doc:name="createAServiceOrderToProcess"/>
         <json:object-to-json-transformer doc:name="Object to JSON"/>
         <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
-        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
 
     </flow>
     <sub-flow name="setOrderIdVaribleFromURIId">
