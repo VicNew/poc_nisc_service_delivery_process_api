@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <sub-flow name="createAServiceOrderToProcess">
+        <set-payload value="{
+   &quot;OrderId&quot;:1234,
+   &quot;CustomerId&quot;:&quot;0123456789&quot;,
+   &quot;ServicesBoundleStatus&quot;:[
+      {
+         &quot;ServiceId&quot;:&quot;5&quot;,
+         &quot;Description&quot;:&quot;Service Description&quot;,
+         &quot;Status&quot;:&quot;Success&quot;
+      },
+      {
+         &quot;ServiceId&quot;:&quot;3&quot;,
+         &quot;Description&quot;:&quot;Service Description&quot;,
+         &quot;Status&quot;:&quot;Success&quot;
+      }
+   ],
+   &quot;Description&quot;:&quot;Service Description&quot;,
+   &quot;Status&quot;:&quot;Completed&quot;,
+   &quot;links&quot;:[
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;GET&quot;
+      },
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;PUT&quot;
+      },
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;DELETE&quot;
+      }
+   ]
+}" doc:name="Set Payload"/>
+    </sub-flow>
+    <sub-flow name="getServiceOrderById">
+        <set-payload value="{
+   &quot;OrderId&quot;:1234,
+   &quot;CustomerId&quot;:&quot;0123456789&quot;,
+   &quot;ServicesBoundleStatus&quot;:[
+      {
+         &quot;ServiceId&quot;:&quot;5&quot;,
+         &quot;Description&quot;:&quot;Service Description&quot;,
+         &quot;Status&quot;:&quot;Success&quot;
+      },
+      {
+         &quot;ServiceId&quot;:&quot;3&quot;,
+         &quot;Description&quot;:&quot;Service Description&quot;,
+         &quot;Status&quot;:&quot;Success&quot;
+      }
+   ],
+   &quot;Description&quot;:&quot;Service Description&quot;,
+   &quot;Status&quot;:&quot;Completed&quot;,
+   &quot;links&quot;:[
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;GET&quot;
+      },
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;PUT&quot;
+      },
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;DELETE&quot;
+      }
+   ]
+}" doc:name="Set Payload"/>
+    </sub-flow>
+    <sub-flow name="getAllServiceOrderByFilters">
+        <set-payload value="[
+   {
+      &quot;OrderId&quot;:1234,
+      &quot;CustomerId&quot;:&quot;0123456789&quot;,
+      &quot;ServicesBoundle&quot;:[
+         {
+            &quot;ServiceId&quot;:&quot;5&quot;,
+            &quot;Description&quot;:&quot;Service Description&quot;
+         },
+         {
+            &quot;ServiceId&quot;:&quot;3&quot;,
+            &quot;Description&quot;:&quot;Service Description&quot;
+         }
+      ],
+      &quot;Description&quot;:&quot;Service Description&quot;,
+      &quot;Status&quot;:&quot;Completed&quot;,
+      &quot;links&quot;:[
+         {
+            &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,
+            &quot;uri&quot;:&quot;/service/order/1234&quot;,
+            &quot;method&quot;:&quot;GET&quot;
+         },
+         {
+            &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,
+            &quot;uri&quot;:&quot;/service/order/1234&quot;,
+            &quot;method&quot;:&quot;PUT&quot;
+         },
+         {
+            &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,
+            &quot;uri&quot;:&quot;/service/order/1234&quot;,
+            &quot;method&quot;:&quot;DELETE&quot;
+         }
+      ]
+   },
+   {
+      &quot;OrderId&quot;:5678,
+      &quot;CustomerId&quot;:&quot;0123456789&quot;,
+      &quot;ServicesBoundle&quot;:[
+         {
+            &quot;ServiceId&quot;:&quot;5&quot;,
+            &quot;Description&quot;:&quot;Service Description&quot;
+         },
+         {
+            &quot;ServiceId&quot;:&quot;3&quot;,
+            &quot;Description&quot;:&quot;Service Description&quot;
+         }
+      ],
+      &quot;Description&quot;:&quot;Service Description&quot;,
+      &quot;Status&quot;:&quot;Completed&quot;,
+      &quot;links&quot;:[
+         {
+            &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,
+            &quot;uri&quot;:&quot;/service/order/5678&quot;,
+            &quot;method&quot;:&quot;GET&quot;
+         },
+         {
+            &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,
+            &quot;uri&quot;:&quot;/service/order/5678&quot;,
+            &quot;method&quot;:&quot;PUT&quot;
+         },
+         {
+            &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,
+            &quot;uri&quot;:&quot;/service/order/5678&quot;,
+            &quot;method&quot;:&quot;DELETE&quot;
+         }
+      ]
+   }
+]" doc:name="Set Payload"/>
+    </sub-flow>
+    <sub-flow name="deleteServiceOrderById">
+        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+    </sub-flow>
+    <sub-flow name="updateServiceOrderById">
+        <set-payload value="{
+   &quot;OrderId&quot;:1234,
+   &quot;CustomerId&quot;:&quot;0123456789&quot;,
+   &quot;ServicesBoundleStatus&quot;:[
+      {
+         &quot;ServiceId&quot;:&quot;5&quot;,
+         &quot;Description&quot;:&quot;Service Description&quot;,
+         &quot;Status&quot;:&quot;Success&quot;
+      },
+      {
+         &quot;ServiceId&quot;:&quot;3&quot;,
+         &quot;Description&quot;:&quot;Service Description&quot;,
+         &quot;Status&quot;:&quot;Success&quot;
+      }
+   ],
+   &quot;Description&quot;:&quot;Service Description&quot;,
+   &quot;Status&quot;:&quot;Completed&quot;,
+   &quot;links&quot;:[
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;GET&quot;
+      },
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;PUT&quot;
+      },
+      {
+         &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,
+         &quot;uri&quot;:&quot;/service/order/1234&quot;,
+         &quot;method&quot;:&quot;DELETE&quot;
+      }
+   ]
+}" doc:name="Set Payload"/>
+    </sub-flow>
+</mule>

@@ -1,58 +1,201 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw"
+	xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
 http://www.mulesoft.org/schema/mule/apikit http://www.mulesoft.org/schema/mule/apikit/current/mule-apikit.xsd
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd">
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
     <flow name="poc_nisc_service_delivery_process_api-main">
         <http:listener config-ref="poc_nisc_service_delivery_process_api-httpListenerConfig" path="/api/*" doc:name="HTTP"/>
         <apikit:router config-ref="poc_nisc_service_delivery_process_api-config" doc:name="APIkit Router"/>
         <exception-strategy ref="poc_nisc_service_delivery_process_api-apiKitGlobalExceptionMapping" doc:name="Reference Exception Strategy"/>
     </flow>
-    <flow name="poc_nisc_service_delivery_process_api-console">
-        <http:listener config-ref="poc_nisc_service_delivery_process_api-httpListenerConfig" path="/console/*" doc:name="HTTP"/>
-        <apikit:console config-ref="poc_nisc_service_delivery_process_api-config" doc:name="APIkit Console"/>
-    </flow>
     <flow name="put:/service/order/{id}:application/json:poc_nisc_service_delivery_process_api-config">
-        <set-payload value="{&#xA;   &quot;OrderId&quot;:1234,&#xA;   &quot;CustomerId&quot;:&quot;0123456789&quot;,&#xA;   &quot;ServicesBoundleStatus&quot;:[&#xA;      {&#xA;         &quot;ServiceId&quot;:&quot;5&quot;,&#xA;         &quot;Description&quot;:&quot;Service Description&quot;,&#xA;         &quot;Status&quot;:&quot;Success&quot;&#xA;      },&#xA;      {&#xA;         &quot;ServiceId&quot;:&quot;3&quot;,&#xA;         &quot;Description&quot;:&quot;Service Description&quot;,&#xA;         &quot;Status&quot;:&quot;Success&quot;&#xA;      }&#xA;   ],&#xA;   &quot;Description&quot;:&quot;Service Description&quot;,&#xA;   &quot;Status&quot;:&quot;Completed&quot;,&#xA;   &quot;links&quot;:[&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;GET&quot;&#xA;      },&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;PUT&quot;&#xA;      },&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;DELETE&quot;&#xA;      }&#xA;   ]&#xA;}" doc:name="Set Payload"/>
+        <flow-ref name="setOrderIdVaribleFromURIId" doc:name="setOrderIdVaribleFromURIId"/>
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <flow-ref name="updateServiceOrderById" doc:name="updateServiceOrderById"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
     </flow>
     <flow name="delete:/service/order/{id}:poc_nisc_service_delivery_process_api-config">
-        <set-payload value="#[NullPayload.getInstance()]" doc:name="Set Payload"/>
+        <flow-ref name="setOrderIdVaribleFromURIId" doc:name="setOrderIdVaribleFromURIId"/>
+        <flow-ref name="deleteServiceOrderById" doc:name="deleteServiceOrderById"/>
+        <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
     </flow>
     <flow name="get:/service/order:poc_nisc_service_delivery_process_api-config">
-        <set-payload value="[&#xA;   {&#xA;      &quot;OrderId&quot;:1234,&#xA;      &quot;CustomerId&quot;:&quot;0123456789&quot;,&#xA;      &quot;ServicesBoundle&quot;:[&#xA;         {&#xA;            &quot;ServiceId&quot;:&quot;5&quot;,&#xA;            &quot;Description&quot;:&quot;Service Description&quot;&#xA;         },&#xA;         {&#xA;            &quot;ServiceId&quot;:&quot;3&quot;,&#xA;            &quot;Description&quot;:&quot;Service Description&quot;&#xA;         }&#xA;      ],&#xA;      &quot;Description&quot;:&quot;Service Description&quot;,&#xA;      &quot;Status&quot;:&quot;Completed&quot;,&#xA;      &quot;links&quot;:[&#xA;         {&#xA;            &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,&#xA;            &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;            &quot;method&quot;:&quot;GET&quot;&#xA;         },&#xA;         {&#xA;            &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,&#xA;            &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;            &quot;method&quot;:&quot;PUT&quot;&#xA;         },&#xA;         {&#xA;            &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,&#xA;            &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;            &quot;method&quot;:&quot;DELETE&quot;&#xA;         }&#xA;      ]&#xA;   },&#xA;   {&#xA;      &quot;OrderId&quot;:5678,&#xA;      &quot;CustomerId&quot;:&quot;0123456789&quot;,&#xA;      &quot;ServicesBoundle&quot;:[&#xA;         {&#xA;            &quot;ServiceId&quot;:&quot;5&quot;,&#xA;            &quot;Description&quot;:&quot;Service Description&quot;&#xA;         },&#xA;         {&#xA;            &quot;ServiceId&quot;:&quot;3&quot;,&#xA;            &quot;Description&quot;:&quot;Service Description&quot;&#xA;         }&#xA;      ],&#xA;      &quot;Description&quot;:&quot;Service Description&quot;,&#xA;      &quot;Status&quot;:&quot;Completed&quot;,&#xA;      &quot;links&quot;:[&#xA;         {&#xA;            &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,&#xA;            &quot;uri&quot;:&quot;/service/order/5678&quot;,&#xA;            &quot;method&quot;:&quot;GET&quot;&#xA;         },&#xA;         {&#xA;            &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,&#xA;            &quot;uri&quot;:&quot;/service/order/5678&quot;,&#xA;            &quot;method&quot;:&quot;PUT&quot;&#xA;         },&#xA;         {&#xA;            &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,&#xA;            &quot;uri&quot;:&quot;/service/order/5678&quot;,&#xA;            &quot;method&quot;:&quot;DELETE&quot;&#xA;         }&#xA;      ]&#xA;   }&#xA;]" doc:name="Set Payload"/>
+        <flow-ref name="getAllServiceOrderByFilters" doc:name="getAllServiceOrderByFilters"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
     </flow>
     <flow name="get:/service/order/{id}:poc_nisc_service_delivery_process_api-config">
-        <set-payload value="{&#xA;   &quot;OrderId&quot;:1234,&#xA;   &quot;CustomerId&quot;:&quot;0123456789&quot;,&#xA;   &quot;ServicesBoundleStatus&quot;:[&#xA;      {&#xA;         &quot;ServiceId&quot;:&quot;5&quot;,&#xA;         &quot;Description&quot;:&quot;Service Description&quot;,&#xA;         &quot;Status&quot;:&quot;Success&quot;&#xA;      },&#xA;      {&#xA;         &quot;ServiceId&quot;:&quot;3&quot;,&#xA;         &quot;Description&quot;:&quot;Service Description&quot;,&#xA;         &quot;Status&quot;:&quot;Success&quot;&#xA;      }&#xA;   ],&#xA;   &quot;Description&quot;:&quot;Service Description&quot;,&#xA;   &quot;Status&quot;:&quot;Completed&quot;,&#xA;   &quot;links&quot;:[&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;GET&quot;&#xA;      },&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;PUT&quot;&#xA;      },&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;DELETE&quot;&#xA;      }&#xA;   ]&#xA;}" doc:name="Set Payload"/>
+        <flow-ref name="setOrderIdVaribleFromURIId" doc:name="setOrderIdVaribleFromURIId"/>
+        <flow-ref name="getServiceOrderById" doc:name="getServiceOrderById"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
     </flow>
     <flow name="post:/service/order:application/json:poc_nisc_service_delivery_process_api-config">
+        <json:json-to-object-transformer returnClass="java.util.Map" doc:name="JSON to Object"/>
+        <flow-ref name="createAServiceOrderToProcess" doc:name="createAServiceOrderToProcess"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
         <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-        <set-payload value="{&#xA;   &quot;OrderId&quot;:1234,&#xA;   &quot;CustomerId&quot;:&quot;0123456789&quot;,&#xA;   &quot;ServicesBoundleStatus&quot;:[&#xA;      {&#xA;         &quot;ServiceId&quot;:&quot;5&quot;,&#xA;         &quot;Description&quot;:&quot;Service Description&quot;,&#xA;         &quot;Status&quot;:&quot;Success&quot;&#xA;      },&#xA;      {&#xA;         &quot;ServiceId&quot;:&quot;3&quot;,&#xA;         &quot;Description&quot;:&quot;Service Description&quot;,&#xA;         &quot;Status&quot;:&quot;Success&quot;&#xA;      }&#xA;   ],&#xA;   &quot;Description&quot;:&quot;Service Description&quot;,&#xA;   &quot;Status&quot;:&quot;Completed&quot;,&#xA;   &quot;links&quot;:[&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/info&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;GET&quot;&#xA;      },&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/updateInfo&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;PUT&quot;&#xA;      },&#xA;      {&#xA;         &quot;rel&quot;:&quot;/linkrels/serviceOrder/delete&quot;,&#xA;         &quot;uri&quot;:&quot;/service/order/1234&quot;,&#xA;         &quot;method&quot;:&quot;DELETE&quot;&#xA;      }&#xA;   ]&#xA;}" doc:name="Set Payload"/>
+
     </flow>
+    <sub-flow name="setOrderIdVaribleFromURIId">
+        <set-variable variableName="orderId" value="#[message.inboundProperties.'http.uri.params'.id]" doc:name="set orderId Variable"/>
+    </sub-flow>
+    <sub-flow name="setResponseContentType">
+        <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
+    </sub-flow>
     <apikit:mapping-exception-strategy name="poc_nisc_service_delivery_process_api-apiKitGlobalExceptionMapping">
         <apikit:mapping statusCode="404">
             <apikit:exception value="org.mule.module.apikit.exception.NotFoundException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Resource not found&quot; }" doc:name="Set Payload"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"404",
+            code:"ERR404",
+            status:"404",
+            title:"Not Found",
+            detail:"The server has not found anything matching the Request-URI.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
         </apikit:mapping>
         <apikit:mapping statusCode="405">
             <apikit:exception value="org.mule.module.apikit.exception.MethodNotAllowedException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Method not allowed&quot; }" doc:name="Set Payload"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"405",
+            code:"ERR405",
+            status:"405",
+            title:"Method Not Allowed",
+            detail:"The method specified in the Request-Line is not allowed for the resource identified by the Request-URI. The response MUST include an Allow header containing a list of valid methods for the requested resource.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
         </apikit:mapping>
         <apikit:mapping statusCode="415">
             <apikit:exception value="org.mule.module.apikit.exception.UnsupportedMediaTypeException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Unsupported media type&quot; }" doc:name="Set Payload"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"415",
+            code:"ERR415",
+            status:"415",
+            title:"Unsupported Media Type",
+            detail:"The server is refusing to service the request because the entity of the request is in a format not supported by the requested resource for the requested method.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
         </apikit:mapping>
         <apikit:mapping statusCode="406">
             <apikit:exception value="org.mule.module.apikit.exception.NotAcceptableException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Not acceptable&quot; }" doc:name="Set Payload"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"406",
+            code:"ERR406",
+            status:"406",
+            title:"Not Acceptable",
+            detail:"The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
         </apikit:mapping>
         <apikit:mapping statusCode="400">
             <apikit:exception value="org.mule.module.apikit.exception.BadRequestException" />
-            <set-property propertyName="Content-Type" value="application/json" doc:name="Property"/>
-            <set-payload value="{ &quot;message&quot;: &quot;Bad request&quot; }" doc:name="Set Payload"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"400",
+            code:"ERR400",
+            status:"400",
+            title:"Bad Request",
+            detail:"The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
+
+        </apikit:mapping>
+        <apikit:mapping statusCode="500">
+            <apikit:exception value="org.mule.api.MessagingException"/>
+            <set-variable variableName="errorMessage" value="#[exception.getMessage()]" doc:name="set errorMessage Variable"/>
+            <dw:transform-message doc:name="Transform Message">
+                <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"500",
+            code:"ERR500",
+            status:"500",
+            title:"Internal Server Error",
+            detail:flowVars.errorMessage,
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-payload>
+            </dw:transform-message>
+            <flow-ref name="setResponseContentType" doc:name="setResponseContentType"/>
         </apikit:mapping>
     </apikit:mapping-exception-strategy>
 </mule>

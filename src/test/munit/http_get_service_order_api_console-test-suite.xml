@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd">
+    <munit:config mock-connectors="false" mock-inbounds="false" name="munit" doc:name="MUnit configuration"/>
+    <spring:beans>
+        <spring:import resource="classpath:poc_nisc_service_delivery_process_api_console.xml"/>
+        <spring:import resource="classpath:poc_nisc_service_delivery_process_api_config.xml"/>
+    </spring:beans>
+    <http:request-config name="HTTP_Raml_Test_Request_Configuration" host="localhost" port="${http.port}" basePath="/api" doc:name="HTTP Request Configuration">
+        <http:raml-api-configuration location="poc_nisc_service_delivery_process_api.raml"/>
+    </http:request-config>
+    <http:request-config name="HTTP_Console_Request_Configuration" host="localhost" port="${http.port}" doc:name="HTTP Request Configuration">
+        <http:raml-api-configuration location="poc_nisc_service_delivery_system_api.raml"/>
+    </http:request-config>
+    <munit:test name="FunctionalTest_ConsoleItsUpAndRunnig" description="FunctionalTest_ConsoleItsUpAndRunnig">
+        <munit:set-null-payload doc:name="Set Null Payload"/>
+        <http:request config-ref="HTTP_Console_Request_Configuration" path="/console" method="GET" doc:name="HTTP-GET-Console"/>
+        <byte-array-to-object-transformer doc:name="Byte Array to Object"/>
+        <logger message="#[payload]" level="INFO" doc:name="Logger"/>
+        <munit:assert-not-null doc:name="Assert Not Null Payload"/>
+    </munit:test>
+</mule>
