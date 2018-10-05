@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+    <munit:config mock-connectors="false" mock-inbounds="false" name="munit" doc:name="MUnit configuration"/>
+    <sub-flow name="setExpectedPutUpdateServiceOrderResponse">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="putUpdateServiceOrderResponse"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   OrderId:1234,
+   CustomerId:"0123456789",
+   ServicesBoundle:[
+      {
+         ServiceId:"5",
+         Description:"Service Description"
+      },
+      {
+         ServiceId:"3",
+         Description:"Service Description"
+      }
+   ],
+   Description:"Service Description",
+   Status:"Completed"
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="getUpdateServiceOrderRequestForTest">
+        <munit:set payload="#[]" doc:name="Set Message"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   OrderId:1234,
+   CustomerId:"0123456789",
+   ServicesBoundle:[
+      {
+         ServiceId:"5",
+         Description:"Service Description"
+      },
+      {
+         ServiceId:"3",
+         Description:"Service Description"
+      }
+   ],
+   Description:"Service Description",
+   Status:"Completed"
+}]]></dw:set-payload>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedGellAllServiceOrdersByFilterResponse">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="expectedGellAllServiceOrdersByFilterResponse"><![CDATA[%dw 1.0
+%output application/json
+---
+[
+   {
+      OrderId:1234,
+      CustomerId:"0123456789",
+      ServicesBoundle:[
+         {
+            ServiceId:"5",
+            Description:"Service Description"
+         },
+         {
+            ServiceId:"3",
+            Description:"Service Description"
+         }
+      ],
+      Description:"Service Description",
+      Status:"Completed",
+      links:[
+         {
+            rel:"/linkrels/serviceOrder/info",
+            uri:"/service/order/1234",
+            method:"GET"
+         },
+         {
+            rel:"/linkrels/serviceOrder/updateInfo",
+            uri:"/service/order/1234",
+            method:"PUT"
+         },
+         {
+            rel:"/linkrels/serviceOrder/delete",
+            uri:"/service/order/1234",
+            method:"DELETE"
+         }
+      ]
+   },
+   {
+      OrderId:5678,
+      CustomerId:"0123456789",
+      ServicesBoundle:[
+         {
+            ServiceId:"5",
+            Description:"Service Description"
+         },
+         {
+            ServiceId:"3",
+            Description:"Service Description"
+         }
+      ],
+      Description:"Service Description",
+      Status:"Completed",
+      links:[
+         {
+            rel:"/linkrels/serviceOrder/info",
+            uri:"/service/order/5678",
+            method:"GET"
+         },
+         {
+            rel:"/linkrels/serviceOrder/updateInfo",
+            uri:"/service/order/5678",
+            method:"PUT"
+         },
+         {
+            rel:"/linkrels/serviceOrder/delete",
+            uri:"/service/order/5678",
+            method:"DELETE"
+         }
+      ]
+   }
+]]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedVarErrorMessage500">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="errorMessage500"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"500",
+            code:"ERR500",
+            status:"500",
+            title:"Internal Server Error",
+            detail:"Internal Server Error For Munit TEST. (java.lang.Exception).",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedVarErrorMessage406">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="errorMessage406"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"406",
+            code:"ERR406",
+            status:"406",
+            title:"Not Acceptable",
+            detail:"The resource identified by the request is only capable of generating response entities which have content characteristics not acceptable according to the accept headers sent in the request.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedVarErrorMessage405">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="errorMessage405"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"405",
+            code:"ERR405",
+            status:"405",
+            title:"Method Not Allowed",
+            detail:"The method specified in the Request-Line is not allowed for the resource identified by the Request-URI. The response MUST include an Allow header containing a list of valid methods for the requested resource.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedVarErrorMessage404">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="errorMessage404"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"404",
+            code:"ERR404",
+            status:"404",
+            title:"Not Found",
+            detail:"The server has not found anything matching the Request-URI.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedVarErrorMessage400">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="errorMessage400"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"400",
+            code:"ERR400",
+            status:"400",
+            title:"Bad Request",
+            detail:"The request could not be understood by the server due to malformed syntax. The client SHOULD NOT repeat the request without modifications.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedVarErrorMessage415">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="errorMessage415"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   error:{
+      errors:[
+         {
+            id:"415",
+            code:"ERR415",
+            status:"415",
+            title:"Unsupported Media Type",
+            detail:"The server is refusing to service the request because the entity of the request is in a format not supported by the requested resource for the requested method.",
+            href:"https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html"
+         }
+      ]
+   }
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="setExpectedPostCreateServiceResponse">
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-variable variableName="postCreateServiceResponse"><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   OrderId:1234,
+   CustomerId:"0123456789",
+   ServicesBoundleStatus:[
+      {
+         ServiceId:"5",
+         Description:"Service Description",
+         Status:"Success"
+      },
+      {
+         ServiceId:"3",
+         Description:"Service Description",
+         Status:"Success"
+      }
+   ],
+   Description:"Service Description",
+   Status:"Completed",
+   links:[
+      {
+         rel:"/linkrels/serviceOrder/info",
+         uri:"/service/order/1234",
+         method:"GET"
+      },
+      {
+         rel:"/linkrels/serviceOrder/updateInfo",
+         uri:"/service/order/1234",
+         method:"PUT"
+      },
+      {
+         rel:"/linkrels/serviceOrder/delete",
+         uri:"/service/order/1234",
+         method:"DELETE"
+      }
+   ]
+}]]></dw:set-variable>
+        </dw:transform-message>
+    </sub-flow>
+    <sub-flow name="getCreateServiceRequestForTest">
+        <munit:set payload="#[]" doc:name="Set Message"/>
+        <dw:transform-message doc:name="Transform Message">
+            <dw:set-payload><![CDATA[%dw 1.0
+%output application/json
+---
+{
+   CustomerId:"0123456789",
+   ServicesBoundle:[
+      {
+         ServiceId:"5",
+         Description:"Service Description"
+      },
+      {
+         ServiceId:"3",
+         Description:"Service Description"
+      }
+   ],
+   Description:"Service Description",
+   Status:"Process"
+}]]></dw:set-payload>
+        </dw:transform-message>
+    </sub-flow>
+</mule>

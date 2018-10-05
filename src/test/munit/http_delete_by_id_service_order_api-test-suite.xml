@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:mock="http://www.mulesoft.org/schema/mule/mock" xmlns:dw="http://www.mulesoft.org/schema/mule/ee/dw" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:spring="http://www.springframework.org/schema/beans" xmlns:core="http://www.mulesoft.org/schema/mule/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/dw http://www.mulesoft.org/schema/mule/ee/dw/current/dw.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd
+http://www.mulesoft.org/schema/mule/mock http://www.mulesoft.org/schema/mule/mock/current/mule-mock.xsd">
+    <munit:config mock-connectors="false" mock-inbounds="false" name="munit" doc:name="MUnit configuration"/>
+    <spring:beans>
+        <spring:import resource="classpath:poc_nisc_service_delivery_process_api.xml"/>
+        <spring:import resource="classpath:poc_nisc_service_delivery_process_api_config.xml"/>
+        <spring:import resource="classpath:service_delivery_process_api_business.xml"/>
+        <spring:import resource="classpath:messages-for-test-suite.xml"/>
+    </spring:beans>
+    <http:request-config name="HTTP_Raml_Test_Request_Configuration" host="localhost" port="${http.port}" basePath="/api" doc:name="HTTP Request Configuration">
+        <http:raml-api-configuration location="poc_nisc_service_delivery_process_api.raml"/>
+    </http:request-config>
+    <munit:test name="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenReturnAValidResponse" description="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenReturnAValidResponse">
+        <mock:when messageProcessor="mule:sub-flow" doc:name="Mock-deleteServiceOrderById">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[NullPayload.getInstance()]"/>
+        </mock:when>
+        <munit:set-null-payload doc:name="Set Null Payload"/>
+        <http:request config-ref="HTTP_Raml_Test_Request_Configuration" path="/service/order/{id}" method="DELETE" doc:name="HTTP-DELETE-By-Id-CreatedServiceOrder">
+            <http:request-builder>
+                <http:uri-param paramName="id" value="#[1234]"/>
+            </http:request-builder>
+        </http:request>
+        <byte-array-to-object-transformer doc:name="Byte Array to Object"/>
+        <json:object-to-json-transformer doc:name="Object to JSON"/>
+        <munit:assert-not-null doc:name="Assert Not Null Payload"/>
+        <munit:assert-payload-equals expectedValue="#['&quot;&#255;&quot;']" doc:name="Assert Payload"/>
+    </munit:test>
+    <munit:test name="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenVerifyThatTheRequestWasRoutedToRigthImplementation" description="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenVerifyThatTheRequestWasRoutedToRigthImplementation">
+        <mock:when messageProcessor="mule:sub-flow" doc:name="Mock-deleteServiceOrderById">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[NullPayload.getInstance()]"/>
+        </mock:when>
+        <munit:set-null-payload doc:name="Set Null Payload"/>
+        <http:request config-ref="HTTP_Raml_Test_Request_Configuration" path="/service/order/{id}" method="DELETE" doc:name="HTTP-DELETE-By-Id-CreatedServiceOrder">
+            <http:request-builder>
+                <http:uri-param paramName="id" value="#[1234]"/>
+            </http:request-builder>
+        </http:request>
+        <mock:verify-call messageProcessor="mule:sub-flow" times="1" doc:name="Verify Call">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+        </mock:verify-call>
+    </munit:test>
+    <munit:test name="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenGetIdFromURI" description="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenGetIdFromURI">
+        <mock:spy messageProcessor="mule:sub-flow" doc:name="Spy-deleteServiceOrderById-Call">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+            <mock:assertions-before-call>
+                <munit:assert-on-equals expectedValue="#['1234']" actualValue="#[flowVars.orderId]" doc:name="Assert Equals for expected URI order id"/>
+            </mock:assertions-before-call>
+        </mock:spy>
+        <mock:when messageProcessor="mule:sub-flow" doc:name="Mock-deleteServiceOrderById">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[NullPayload.getInstance()]"/>
+        </mock:when>
+        <munit:set-null-payload doc:name="Set Null Payload"/>
+        <http:request config-ref="HTTP_Raml_Test_Request_Configuration" path="/service/order/{id}" method="DELETE" doc:name="HTTP-DELETE-By-Id-CreatedServiceOrder">
+            <http:request-builder>
+                <http:uri-param paramName="id" value="#[1234]"/>
+            </http:request-builder>
+        </http:request>
+        <mock:verify-call messageProcessor="mule:sub-flow" times="1" doc:name="Verify Call">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+        </mock:verify-call>
+    </munit:test>
+    <munit:test name="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenReturnAHTTPSTATUS200" description="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenReturnAHTTPSTATUS200">
+        <mock:when messageProcessor="mule:sub-flow" doc:name="Mock-deleteServiceOrderById">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[NullPayload.getInstance()]"/>
+        </mock:when>
+        <munit:set-null-payload doc:name="Set Null Payload"/>
+        <http:request config-ref="HTTP_Raml_Test_Request_Configuration" path="/service/order/{id}" method="DELETE" doc:name="HTTP-DELETE-By-Id-CreatedServiceOrder">
+            <http:request-builder>
+                <http:uri-param paramName="id" value="#[1234]"/>
+            </http:request-builder>
+        </http:request>
+        <munit:assert-on-equals message="It is not the expected HTTP Status Code for the response" expectedValue="#[200]" actualValue="#[message.inboundProperties.'http.status']" doc:name="Assert Equals for Expected HTTP 200 Status Code Response"/>
+    </munit:test>
+    <munit:test name="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenReturnExpectedContentType" description="FuntionalTest-GivenARequestWhenDeleteByIdAServiceOrderThenReturnExpectedContentType">
+        <mock:when messageProcessor="mule:sub-flow" doc:name="Mock-deleteServiceOrderById">
+            <mock:with-attributes>
+                <mock:with-attribute name="name" whereValue="#[matchContains('deleteServiceOrderById')]"/>
+            </mock:with-attributes>
+            <mock:then-return payload="#[NullPayload.getInstance()]"/>
+        </mock:when>
+        <munit:set-null-payload doc:name="Set Null Payload"/>
+        <http:request config-ref="HTTP_Raml_Test_Request_Configuration" path="/service/order/{id}" method="DELETE" doc:name="HTTP-DELETE-By-Id-CreatedServiceOrder">
+            <http:request-builder>
+                <http:uri-param paramName="id" value="#[1234]"/>
+            </http:request-builder>
+        </http:request>
+        <munit:assert-on-equals message="It is not the expected Content-Type for the response" expectedValue="#['application/json']" actualValue="#[message.inboundProperties.'Content-Type']" doc:name="Assert Equals for Expected Content-Type Response"/>
+    </munit:test>
+</mule>
